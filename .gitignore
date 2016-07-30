@@ -1,0 +1,11 @@
+# .gitignore file for ECE 586 Final Project
+
+$cat .gitignore
+
+# ignore everything in docs
+# mostly PDFs
+
+/docs/*
+
+#ignore everything in output
+/output/*
