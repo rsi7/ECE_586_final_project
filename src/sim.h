@@ -12,8 +12,8 @@
  * <trace file> is the name of a file that contains a memory access trace.
  */
  
-#ifndef SWIFT_SIM_H_
-#define SWIFT_SIM_H_
+#ifndef CACHESIM_H
+#define CACHESIM_H
 
 /* Constants 
  *
@@ -24,22 +24,19 @@
  */
 
 /* Print Debug Messages */
-#define DEBUG 0
+#define DEBUG 1
 
 /* Max Line Length in Trace */
 #define LINELENGTH 128
 
-// /* Cache Sizes (in bytes) */
-// #define CACHE_SIZE 16384
-// #define BLOCK_SIZE 4
-
-// /* Block Sizes */
-// #define TAG 18 /* 18 + 0 = 18 */
-// #define INDEX 12 /* 18 + 12 = 30 */
-// #define OFFSET 2 /* 30 + 2 = 32 */
-
 /* Address Size */
 #define ADDRESS_SIZE 32
+
+/* Cache Parameters */
+#define NUMBER_OF_SETS 16
+#define ASSOCIATIVITY 4
+#define BLOCK_SIZE 32
+#define CACHE_SIZE (NUMBER_OF_SETS * ASSOCIATIVITY * BLOCK_SIZE)
 
 /* Typedefs */
 typedef struct Cache_* Cache;
@@ -53,14 +50,13 @@ typedef struct Way_* Way;
  *
  * @param   cache_size      size of cache in bytes
  * @param   block_size      size of each block in bytes
- * @param   write_policy    0 = write through, 1 = write back
  * @param 	associativity 	# of ways
  *
  * @return  success         new Cache
  * @return  failure         NULL
  */
 
-Cache createCache(int cache_size, int block_size, int write_policy, int associativity);
+Cache createCache(int cache_size, int write_policy, int associativity);
 
 /* destroyCache
  *
@@ -118,4 +114,4 @@ int writeToCache(Cache cache, char* address);
 void printCache(Cache cache);
 
 #endif
-/* SWIFT_SIM_H_ */
+/* CACHESIM_H */

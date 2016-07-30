@@ -1,39 +1,17 @@
 /* File: sim.c
  * 
  * This is a program that simulates a cache using a trace file 
- * and either a write through or write back policy.
  * 
- * Usage: Usage: ./sim [-h] <write policy> <trace file>
+ * Usage: Usage: ./CacheSim.exe [-h] <trace file>
  *
- * <write policy> is one of:
- *      wt - simulate a write through cache.
- *      wb - simulate a write back cache
  *
- * <trace file> is the name of a file that contains a memory access trace.
+ * <trace file> is the file location that contains a memory access trace.
  *
- * Table of Contents:
- *      1. Includes
- *      2. Structs
- *          -Block
- *          -Cache
- *      3. Utility Functions
- *          -htoi
- *          -getBinary
- *          -formatBinary
- *          -btoi
- *          -parseMemoryAddress
- *      4. Main Function
- *      5. Cache Functions
- *          -createCache
- *          -destroyCache
- *          -readFromCache
- *          -writeToCache
- *          -printCache
  */
  
 /********************************
  *     1. Includes              *
- ********************************/
+ *******************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,12 +25,6 @@
  *     2. Structs & Globals     *
  ********************************/
 
-struct node
-{
-    int data;
-    struct node *next;
-};
-
 /* Block
  *
  * Holds an integer that states the validity of the bit (0 = invalid,
@@ -64,7 +36,7 @@ struct Block_ {
     int valid;
     char* tag;
     int dirty;
-    struct node* list;
+    int timestamp;
 };
 
 /* Way
@@ -81,7 +53,7 @@ struct Way_ {
 /* Cache
  *
  * Cache object that holds all the data about cache access as well as 
- * the write policy, sizes, and an array of ways.
+ * the sizes and an array of ways.
  *
  * @param   hits            # of cache accesses that hit valid data
  * @param   misses          # of cache accesses that missed valid data
@@ -102,28 +74,19 @@ struct Cache_ {
     int evictions;
     int cache_size;
     int block_size;
-    int write_policy;
     int associativity;
     Way* ways;
 };
-
-void deleteNode(struct node *head, int value);
-void push(struct node **head_ref, int new_data);
-void printList(struct node *head);
-int findLast(struct node* head);
-
-// global variables for program arguments
-
-int argNumSets = 0;
-int argNumWays = 0;
-int argBlockSize = 0;
-int argCacheSize = 0;
 
 // global variables for cache bits
 
 int bitsTag = 0;
 int bitsIndex = 0;
 int bitsOffset = 0;
+
+// global variable for counting memory accesses
+
+int mem_accesses = 0;
 
 /********************************
  *     3. Utility Functions     *
@@ -379,7 +342,7 @@ void parseMemoryAddress(char *address)
 int main(int argc, char **argv) {
 
     /* Local Variables */
-    int write_policy, counter, i, j;
+    int counter, i, j;
     Cache cache;
     FILE *file;
     char mode, address[100];
@@ -390,74 +353,32 @@ int main(int argc, char **argv) {
 
     /* Help Menu
      *
-     * If the help flag is present or there are fewer than
-     * three arguments, print the usage menu and return. 
+     * If the help flag is present or there is not exactly
+     * two arguments (./CacheSim + file location),
+     * print the usage menu and return.
      */
      
-    if(argc < 4 || strcmp(argv[1], "-h") == 0) {
-        fprintf(stderr, "Usage: ./sim [-h] <# of sets> <# of ways> <line size (bytes)> <trace file>\n\n");
+    if(argc != 2 || strcmp(argv[1], "-h") == 0) {
+        fprintf(stderr, "Usage: ./CacheSim.exe [-h] <trace file>\n\n");
         return 0;
     }
     
-    /* Write Policy */
-    write_policy = 1;
-    if(DEBUG) printf("Write Policy: Write Back\n");
-
-    // handle number of sets argument
-
-    if (sscanf (argv[1], "%i", &argNumSets)!=1) {
-    	fprintf (stderr, "Error: number of sets needs to be an integer.\n\n");
-    	return 0;
-    }
-
-    if (argNumSets <= 1 || argNumSets % 2 != 0) {
-        fprintf(stderr, "Error: number of sets needs to be a power of two.\n\n");
-        return 0;
-    }
-
-    // handle number of ways argument
-
-    if (sscanf (argv[2], "%i", &argNumWays)!=1) {
-    	fprintf (stderr, "Error: number of ways needs to be an integer.\n\n");
-    	return 0;
-    }
-
-    if (argNumWays != 1) {
-        if (argNumWays % 2 != 0 || argNumWays < 1 || argNumWays > 8) {
-            fprintf(stderr, "Error: number of ways needs to be a power of two between 1 - 8.\n\n");
-            return 0;
-        }
-    }
-
-    // handle block size argument
-
-    if (sscanf (argv[3], "%i", &argBlockSize)!=1) {
-    	fprintf (stderr, "Error: Block size needs to be an integer.\n\n");
-    	return 0;
-    }
-
-    if (argBlockSize < 4 || argBlockSize > 128 || argBlockSize % 2 != 0) {
-        fprintf(stderr, "Error: line size needs to be a power of two between 4 - 128 bytes.\n\n");
-        return 0;
-    }
 
     // calculate other cache parameters
 
-    argCacheSize = argNumSets * argBlockSize * argNumWays;
-
-    bitsOffset = floor(log2(argBlockSize));
-    bitsIndex = floor(log2(argNumSets));
+    bitsOffset = floor(log2(BLOCK_SIZE));
+    bitsIndex = floor(log2(NUMBER_OF_SETS));
     bitsTag = ADDRESS_SIZE - (bitsOffset + bitsIndex);
 
     /* Open the file for reading. */
-    file = fopen( argv[4], "r" );
+    file = fopen( argv[1], "r" );
     if( file == NULL )
     {
         fprintf(stderr, "Error: Could not open file.\n");
         return 0; 
     }
 
-    cache = createCache(argCacheSize, argBlockSize, write_policy, argNumWays);
+    cache = createCache(CACHE_SIZE, BLOCK_SIZE, ASSOCIATIVITY);
 
     counter = 0;
     
@@ -482,16 +403,17 @@ int main(int argc, char **argv) {
             
             if(DEBUG) printf("\nLine %i: Mode %c -- Address %s\n\n", counter+1, mode, address);
             
-            if(mode == '0')
-            {
+            if(mode == '0') {
+            	mem_accesses++;
                 readFromCache(cache, address);
             }
-            else if(mode == '1')
-            {
+
+            else if(mode == '1') {
+            	mem_accesses++;
                 writeToCache(cache, address);
             }
-            else
-            {
+
+            else {
                 printf("%i: ERROR!!!!\n", counter);
                 fclose(file);
                 destroyCache(cache);
@@ -535,19 +457,17 @@ int main(int argc, char **argv) {
  *
  * @param   cache_size      size of cache in bytes
  * @param   block_size      size of each block in bytes
- * @param   write_policy    0 = write through, 1 = write back
  * @param 	associativity 	# of ways
  * @return  success         new Cache
  * @return  failure         NULL
  */
 
-Cache createCache(int cache_size, int block_size, int write_policy, int associativity)
+Cache createCache(int cache_size, int block_size, int associativity)
 {
     /* Local Variables */
     Cache cache;
     int i = 0;
     int j = 0;
-    int k = 0;
     
     /* Validate Inputs */
     if(cache_size <= 0)
@@ -562,11 +482,6 @@ Cache createCache(int cache_size, int block_size, int write_policy, int associat
         return NULL;
     }
     
-    if(write_policy != 0 && write_policy != 1)
-    {
-        fprintf(stderr, "Write policy must be either \"Write Through\" or \"Write Back\".\n");
-        return NULL;
-    }
     
     /* Lets make a cache! */
 
@@ -586,20 +501,18 @@ Cache createCache(int cache_size, int block_size, int write_policy, int associat
     cache->reads = 0;
     cache->writes = 0;
     cache->evictions = 0;
-    
-    cache->write_policy = write_policy;
-    
-    cache->cache_size = argCacheSize;
-    cache->block_size = argBlockSize;
+
+    cache->cache_size = cache_size;
+    cache->block_size = block_size;
     
 
-    cache->associativity = argNumWays;
+    cache->associativity = associativity;
 
     // allocate all the memory for ALL ways
-	cache->ways = (Way*) malloc( sizeof(Way) * argNumWays );
+	cache->ways = (Way*) malloc( sizeof(Way) * associativity );
 	assert(cache->ways != NULL);
 
-    for(j = 0; j < argNumWays; j++) {
+    for(j = 0; j < associativity; j++) {
 
     	// allocate memory for this INDIVIDUAL way
 		cache->ways[j] = (Way) malloc( sizeof( struct Way_ ) );
@@ -608,13 +521,13 @@ Cache createCache(int cache_size, int block_size, int write_policy, int associat
     	cache->ways[j]->waynum = j;
 
 		// allocate space for ALL Blocks
-		cache->ways[j]->blocks = (Block*) malloc( sizeof(Block) * argNumSets );
+		cache->ways[j]->blocks = (Block*) malloc( sizeof(Block) * NUMBER_OF_SETS );
 		assert(cache->ways[j]->blocks != NULL);
 
 		/* By default insert blocks where valid = 0 */
 
-		for(i = 0; i < argNumSets; i++)
-		{
+		for(i = 0; i < NUMBER_OF_SETS; i++) {
+
 			// allocate memory for this INDIVIDUAL block
 			cache->ways[j]->blocks[i] = (Block) malloc( sizeof( struct Block_ ) );
 			assert(cache->ways[j]->blocks[i] != NULL);
@@ -623,16 +536,8 @@ Cache createCache(int cache_size, int block_size, int write_policy, int associat
 			cache->ways[j]->blocks[i]->valid = 0;
 			cache->ways[j]->blocks[i]->dirty = 0;
 			cache->ways[j]->blocks[i]->tag = NULL;
+			cache->ways[j]->blocks[i]->timestamp = 0;
 
-		    // create the linked list for this block
-			cache->ways[j]->blocks[i]->list = malloc(sizeof(struct node));
-
-			cache->ways[j]->blocks[i]->list->data = 0;
-			cache->ways[j]->blocks[i]->list->next = NULL;
-
-			for (k = 1; k < argNumWays; k++) {
-				push(&cache->ways[j]->blocks[i]->list, k);
-			}
 		}
     }
     
@@ -658,10 +563,10 @@ void destroyCache(Cache cache) {
     if(cache != NULL) {
 
     	// deallocate ALL ways in this cache
-    	for (j = 0; j < argNumWays; j++) {
+    	for (j = 0; j < ASSOCIATIVITY; j++) {
 
     		// deallocate ALL blocks in this way
-			for( i = 0; i < argNumSets; i++ ) {
+			for( i = 0; i < NUMBER_OF_SETS; i++ ) {
 
 				// check if the block entry is NULL
 				if(cache->ways[j]->blocks[i]->tag != NULL) {
@@ -701,8 +606,9 @@ int readFromCache(Cache cache, char* address)
     char *bstring, *bformatted, *tag, *index, *offset;
     int i;
     int j;
+    int LRU;
+    int LRU_access_num;
     int noHit = 1;
-    int LRU = 0;
 
     Block block;
     
@@ -772,9 +678,9 @@ int readFromCache(Cache cache, char* address)
     
     /* Get the block */
     
-	if(DEBUG) printf("\tAttempting to read data from cache slot %i.\n\n", btoi(index));
+	if(DEBUG) printf("\tAttempting to read data from cache slot %i.\n", btoi(index));
 
-    for(j = 0; j < argNumWays; j++) {
+    for(j = 0; j < ASSOCIATIVITY; j++) {
 
 		block = cache->ways[j]->blocks[btoi(index)];
 
@@ -782,7 +688,8 @@ int readFromCache(Cache cache, char* address)
 		if(block->valid == 1 && strcmp(block->tag, tag) == 0) {
 			cache->hits++;
 			noHit = 0;
-			LRU = j;
+			block->timestamp = mem_accesses;
+			printf("\tCache hit on Way %d - block timestamp updated to %d.\n", j, mem_accesses);
 			free(tag);
 		}
 
@@ -794,15 +701,28 @@ int readFromCache(Cache cache, char* address)
 		cache->misses++;
 		cache->reads++;
 
-		LRU = findLast(block->list);
-		block = cache->ways[LRU]->blocks[btoi(index)];
+        LRU_access_num = mem_accesses;
 
-		if(cache->write_policy == 1 && block->dirty == 1) {
+        for (j = 0; j < ASSOCIATIVITY; j++) {
+
+            block = cache->ways[j]->blocks[btoi(index)];
+
+            if(block->timestamp < LRU_access_num) {
+            	LRU_access_num = block->timestamp;
+            	LRU = j;
+            }
+        }
+
+		printf("\tCache miss - eviction on Way %d. Block timestamp update to %d.\n", LRU, mem_accesses);
+        block = cache->ways[LRU]->blocks[btoi(index)];
+
+		if(block->dirty == 1) {
 			cache->writes++;
 			block->dirty = 0;
 		}
 
 		block->valid = 1;
+        block->timestamp = mem_accesses;
 
 		if(block->tag != NULL) {
 			cache->evictions++;
@@ -812,14 +732,6 @@ int readFromCache(Cache cache, char* address)
 		block->tag = tag;
 
 	}
-
-	for(j = 0; j < argNumWays; j++) {
-
-		deleteNode(cache->ways[j]->blocks[btoi(index)]->list,LRU);
-		push(&cache->ways[j]->blocks[btoi(index)]->list,LRU);
-	}
-
-	if (DEBUG) {printList(block->list);}
     
     free(bstring);
     free(bformatted);
@@ -848,8 +760,9 @@ int writeToCache(Cache cache, char* address)
     int i = 0;
     int j = 0;
     Block block;
+    int LRU;
+    int LRU_access_num;
     int noHit = 1;
-    int LRU = 0;
     
     /* Validate inputs */
     if(cache == NULL)
@@ -916,41 +829,50 @@ int writeToCache(Cache cache, char* address)
     
     /* Get the block */
     
-    if(DEBUG) printf("\tAttempting to write data to cache slot %i.\n\n", btoi(index));
+    if(DEBUG) printf("\tAttempting to write data to cache slot %i.\n", btoi(index));
 
-    for (j = 0; j < argNumWays; j++) {
+    for (j = 0; j < ASSOCIATIVITY; j++) {
 
         block = cache->ways[j]->blocks[btoi(index)];
 
         if(block->valid == 1 && strcmp(block->tag, tag) == 0) {
-            if(cache->write_policy == 0) {
-                cache->writes++;
-            }
+
             noHit = 0;
             block->dirty = 1;
+            block->timestamp = mem_accesses;
             cache->hits++;
+			printf("\tCache hit on Way %d - block timestamp updated to %d.\n", j, mem_accesses);
             free(tag);
-			LRU = j;
         }
     }
+
 
     if (noHit == 1) {
         cache->misses++;
         cache->reads++;
         
-        if(cache->write_policy == 0) {
-            cache->writes++;
+        LRU_access_num = mem_accesses;
+
+        for (j = 0; j < ASSOCIATIVITY; j++) {
+
+            block = cache->ways[j]->blocks[btoi(index)];
+
+            if(block->timestamp < LRU_access_num) {
+            	LRU_access_num = block->timestamp;
+            	LRU = j;
+            }
         }
-        
-		LRU = findLast(block->list);
+
+		printf("\tCache miss - eviction on Way %d. Block timestamp update to %d.\n", LRU, mem_accesses);
 		block = cache->ways[LRU]->blocks[btoi(index)];
 
-        if(cache->write_policy == 1 && block->dirty == 1) {
+        if(block->dirty == 1) {
             cache->writes++;
         }        
         
         block->dirty = 1;
         block->valid = 1;
+        block->timestamp = mem_accesses;
         
         if(block->tag != NULL) {
         	cache->evictions++;
@@ -960,14 +882,6 @@ int writeToCache(Cache cache, char* address)
         block->tag = tag;
     }
     
-	for(j = 0; j < argNumWays; j++) {
-
-		deleteNode(cache->ways[j]->blocks[btoi(index)]->list,LRU);
-		push(&cache->ways[j]->blocks[btoi(index)]->list,LRU);
-	}
-
-	if (DEBUG) {printList(block->list);}
-
     free(bstring);
     free(bformatted);
     free(offset);
@@ -997,11 +911,11 @@ void printCache(Cache cache)
     if(cache != NULL) {
     	if (DEBUG) {
 
-    		for (j = 0; j < argNumWays; j++) {
+    		for (j = 0; j < ASSOCIATIVITY; j++) {
 
     			printf("\n\n******** Way # %d ********\n\n", cache->ways[j]->waynum);
 
-				for(i = 0; i < argNumSets; i++) {
+				for(i = 0; i < NUMBER_OF_SETS; i++) {
 					tag = "NULL";
 					if(cache->ways[j]->blocks[i]->tag != NULL) {
 						tag = cache->ways[j]->blocks[i]->tag;
@@ -1015,8 +929,8 @@ void printCache(Cache cache)
 
         printf("\tCache size: %d\n", cache->cache_size);
         printf("\tCache block size: %d\n", cache->block_size);
-        printf("\tCache number of lines: %d\n", argNumSets);
-        printf("\tCache associativity: %d\n", argNumWays);
+        printf("\tCache number of lines: %d\n", NUMBER_OF_SETS);
+        printf("\tCache associativity: %d\n", ASSOCIATIVITY);
 
         printf("\nCache performance:\n\n");
 
@@ -1033,90 +947,4 @@ void printCache(Cache cache)
         printf("\tCache evictions: %d\n\n", cache->evictions);
 
     }
-}
-
-void deleteNode(struct node *head, int value)
-{
-	struct node* n = head;
-
-	while (n->data != value && n != NULL) {
-	n = n->next;
-	}
-
-    // When node to be deleted is head node
-    if(head == n)
-    {
-        if(head->next == NULL)
-        {
-            if (DEBUG) printf("There is only one node. The list can't be made empty ");
-            return;
-        }
-
-        /* Copy the data of next node to head */
-        head->data = head->next->data;
-
-        // store address of next node
-        n = head->next;
-
-        // Remove the link of next node
-        head->next = head->next->next;
-
-        // free memory
-        free(n);
-
-        return;
-    }
-
-
-    // When not first node, follow the normal deletion process
-
-    // find the previous node
-    struct node *prev = head;
-    while(prev->next != NULL && prev->next != n)
-        prev = prev->next;
-
-    // Check if node really exists in Linked List
-    if(prev->next == NULL)
-    {
-        printf("\n Given node is not present in Linked List");
-        return;
-    }
-
-    // Remove node from Linked List
-    prev->next = prev->next->next;
-
-    // Free memory
-    free(n);
-
-    return;
-}
-
-/* Utility function to insert a node at the begining */
-void push(struct node **head_ref, int new_data)
-{
-    struct node *new_node = (struct node *)malloc(sizeof(struct node));
-    new_node->data = new_data;
-    new_node->next = *head_ref;
-    *head_ref = new_node;
-}
-
-/* Utility function to print a linked list */
-void printList(struct node *head)
-{
-	printf("\tLinked list LRU:  ");
-
-    while(head!=NULL)
-    {
-        printf("%d  ",head->data);
-        head=head->next;
-    }
-    printf("\n");
-}
-
-int findLast(struct node* head) {
-
-	while(head->next!= NULL) {
-		head = head->next;
-	}
-	return head->data;
 }
