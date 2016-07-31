@@ -67,10 +67,15 @@ struct Way_ {
 
 
 struct Cache_ {
-    int hits;
-    int misses;
     int reads;
+    int read_hits;
+    int read_misses;
     int writes;
+    int write_hits;
+    int write_misses;
+    int cycles;
+    int stream_ins;
+    int stream_outs;
     int evictions;
     int cache_size;
     int block_size;
@@ -496,16 +501,22 @@ Cache createCache(int cache_size, int block_size, int associativity)
     
     // take care of most parameters
 
-    cache->hits = 0;
-    cache->misses = 0;
     cache->reads = 0;
+    cache->read_hits = 0;
+    cache->read_misses = 0;
+
     cache->writes = 0;
+    cache->write_hits = 0;
+    cache->write_misses = 0;
+
+    cache->cycles = 0;
+
+    cache->stream_ins = 0;
+    cache->stream_outs = 0;
     cache->evictions = 0;
 
     cache->cache_size = cache_size;
     cache->block_size = block_size;
-    
-
     cache->associativity = associativity;
 
     // allocate all the memory for ALL ways
@@ -614,14 +625,12 @@ int readFromCache(Cache cache, char* address)
     
     
     /* Validate inputs */
-    if(cache == NULL)
-    {
+    if(cache == NULL) {
         fprintf(stderr, "Error: Must supply a valid cache to write to.\n");
         return 0;
     }
     
-    if(address == NULL)
-    {
+    if(address == NULL) {
         fprintf(stderr, "Error: Must supply a valid memory address.\n");
         return 0;
     }
@@ -632,8 +641,9 @@ int readFromCache(Cache cache, char* address)
     bstring = getBinary(dec);
     bformatted = formatBinary(bstring);
     
-    if(DEBUG)
-    {
+    // print cache address bits for debugging
+
+    if(DEBUG) {
         printf("\tHex: %s\n", address);
         printf("\tDecimal: %u\n", dec);
         printf("\tBinary: %s\n", bstring);
@@ -646,8 +656,7 @@ int readFromCache(Cache cache, char* address)
     assert(tag != NULL);
     tag[bitsTag] = '\0';
     
-    for(i = 0; i < bitsTag; i++)
-    {
+    for(i = 0; i < bitsTag; i++) {
         tag[i] = bformatted[i];
     }
     
@@ -655,8 +664,7 @@ int readFromCache(Cache cache, char* address)
     assert(index != NULL);
     index[bitsIndex] = '\0';
     
-    for(i = bitsTag + 1; i < bitsIndex + bitsTag + 1; i++)
-    {
+    for(i = bitsTag + 1; i < bitsIndex + bitsTag + 1; i++) {
         index[i - bitsTag - 1] = bformatted[i];
     }
     
@@ -664,32 +672,36 @@ int readFromCache(Cache cache, char* address)
     assert(offset != NULL);
     offset[bitsOffset] = '\0';
     
-    for(i = bitsIndex + bitsTag + 2; i < bitsOffset + bitsIndex + bitsTag + 2; i++)
-    {
+    for(i = bitsIndex + bitsTag + 2; i < bitsOffset + bitsIndex + bitsTag + 2; i++) {
         offset[i - bitsIndex - bitsTag - 2] = bformatted[i];
     }
     
-    if(DEBUG)
-    {
+    // print tag + index + offset for debugging
+
+    if(DEBUG) {
         printf("\tTag: %s (%i)\n", tag, btoi(tag));
         printf("\tIndex: %s (%i)\n", index, btoi(index));
         printf("\tOffset: %s (%i)\n\n", offset, btoi(offset));
     }
     
     /* Get the block */
-    
 	if(DEBUG) printf("\tAttempting to read data from cache slot %i.\n", btoi(index));
 
+	// increment another attempted read access
+	cache->reads++;
+
+	// check through all 4 ways of the cache
     for(j = 0; j < ASSOCIATIVITY; j++) {
 
 		block = cache->ways[j]->blocks[btoi(index)];
 
 		// if there's a cache hit (valid && tags match)
 		if(block->valid == 1 && strcmp(block->tag, tag) == 0) {
-			cache->hits++;
+			cache->read_hits++;
+			cache->cycles += 1;
 			noHit = 0;
 			block->timestamp = mem_accesses;
-			printf("\tCache hit on Way %d - block timestamp updated to %d.\n", j, mem_accesses);
+			if (DEBUG) printf("\tCache hit on Way %d. Block timestamp updated to %d.\n", j, mem_accesses);
 			free(tag);
 		}
 
@@ -698,11 +710,13 @@ int readFromCache(Cache cache, char* address)
 	// otherwise, cache miss - implement LRU here
 	if (noHit == 1) {
 
-		cache->misses++;
-		cache->reads++;
+		cache->read_misses++;
+		cache->stream_ins++;
+		cache->cycles +=51;
 
         LRU_access_num = mem_accesses;
 
+        // search through blocks in all 4 ways to find LRU
         for (j = 0; j < ASSOCIATIVITY; j++) {
 
             block = cache->ways[j]->blocks[btoi(index)];
@@ -713,22 +727,27 @@ int readFromCache(Cache cache, char* address)
             }
         }
 
-		printf("\tCache miss - eviction on Way %d. Block timestamp update to %d.\n", LRU, mem_accesses);
+        // evict LRU and log cache parameters
+		if (DEBUG) printf("\tCache miss - eviction on Way %d. Block timestamp updated to %d.\n", LRU, mem_accesses);
         block = cache->ways[LRU]->blocks[btoi(index)];
 
+        // if data was dirty, need to stream-out and reset dirty bit
 		if(block->dirty == 1) {
-			cache->writes++;
+			cache->stream_outs++;
+			cache->cycles += 50;
 			block->dirty = 0;
 		}
 
 		block->valid = 1;
         block->timestamp = mem_accesses;
 
+        // if valid data got evicted, log an eviction
 		if(block->tag != NULL) {
 			cache->evictions++;
 			free(block->tag);
 		}
 
+		// replace victim tag with incoming block's tag
 		block->tag = tag;
 
 	}
@@ -753,8 +772,8 @@ int readFromCache(Cache cache, char* address)
  * @return      error       0
  */
 
-int writeToCache(Cache cache, char* address)
-{
+int writeToCache(Cache cache, char* address) {
+
     unsigned int dec;
     char *bstring, *bformatted, *tag, *index, *offset;
     int i = 0;
@@ -765,14 +784,12 @@ int writeToCache(Cache cache, char* address)
     int noHit = 1;
     
     /* Validate inputs */
-    if(cache == NULL)
-    {
+    if(cache == NULL) {
         fprintf(stderr, "Error: Must supply a valid cache to write to.\n");
         return 0;
     }
     
-    if(address == NULL)
-    {
+    if(address == NULL) {
         fprintf(stderr, "Error: Must supply a valid memory address.\n");
         return 0;
     }
@@ -783,8 +800,7 @@ int writeToCache(Cache cache, char* address)
     bstring = getBinary(dec);
     bformatted = formatBinary(bstring);
     
-    if(DEBUG)
-    {
+    if(DEBUG) {
         printf("\tHex: %s\n", address);
         printf("\tDecimal: %u\n", dec);
         printf("\tBinary: %s\n", bstring);
@@ -797,8 +813,7 @@ int writeToCache(Cache cache, char* address)
     assert(tag != NULL);
     tag[bitsTag] = '\0';
     
-    for(i = 0; i < bitsTag; i++)
-    {
+    for(i = 0; i < bitsTag; i++) {
         tag[i] = bformatted[i];
     }
     
@@ -806,8 +821,7 @@ int writeToCache(Cache cache, char* address)
     assert(index != NULL);
     index[bitsIndex] = '\0';
     
-    for(i = bitsTag + 1; i < bitsIndex + bitsTag + 1; i++)
-    {
+    for(i = bitsTag + 1; i < bitsIndex + bitsTag + 1; i++) {
         index[i - bitsTag - 1] = bformatted[i];
     }
     
@@ -815,13 +829,11 @@ int writeToCache(Cache cache, char* address)
     assert(offset != NULL);
     offset[bitsOffset] = '\0';
     
-    for(i = bitsIndex + bitsTag + 2; i < bitsOffset + bitsIndex + bitsTag + 2; i++)
-    {
+    for(i = bitsIndex + bitsTag + 2; i < bitsOffset + bitsIndex + bitsTag + 2; i++) {
         offset[i - bitsIndex - bitsTag - 2] = bformatted[i];
     }
     
-    if(DEBUG)
-    {
+    if(DEBUG) {
         printf("\tTag: %s (%i)\n", tag, btoi(tag));
         printf("\tIndex: %s (%i)\n", index, btoi(index));
         printf("\tOffset: %s (%i)\n\n", offset, btoi(offset));
@@ -831,28 +843,36 @@ int writeToCache(Cache cache, char* address)
     
     if(DEBUG) printf("\tAttempting to write data to cache slot %i.\n", btoi(index));
 
+    // log another attempted write access
+    cache->writes++;
+
     for (j = 0; j < ASSOCIATIVITY; j++) {
 
         block = cache->ways[j]->blocks[btoi(index)];
 
+        // if there was a write hit (valid bit set && tags match)
         if(block->valid == 1 && strcmp(block->tag, tag) == 0) {
-
             noHit = 0;
             block->dirty = 1;
             block->timestamp = mem_accesses;
-            cache->hits++;
-			printf("\tCache hit on Way %d - block timestamp updated to %d.\n", j, mem_accesses);
+            cache->write_hits++;
+            cache->cycles += 1;
+			if (DEBUG) printf("\tCache hit on Way %d. Block timestamp updated to %d.\n", j, mem_accesses);
             free(tag);
         }
     }
 
 
+    // cache miss - implement LRU here
     if (noHit == 1) {
-        cache->misses++;
-        cache->reads++;
+
+        cache->write_misses++;
+        cache->stream_ins++;
+        cache->cycles +=51;
         
         LRU_access_num = mem_accesses;
 
+        // search through all 4 ways looking for LRU block
         for (j = 0; j < ASSOCIATIVITY; j++) {
 
             block = cache->ways[j]->blocks[btoi(index)];
@@ -863,22 +883,29 @@ int writeToCache(Cache cache, char* address)
             }
         }
 
-		printf("\tCache miss - eviction on Way %d. Block timestamp update to %d.\n", LRU, mem_accesses);
+        // evict the LRU block & log cache parameters
+		if (DEBUG) printf("\tCache miss - eviction on Way %d. Block timestamp updated to %d.\n", LRU, mem_accesses);
 		block = cache->ways[LRU]->blocks[btoi(index)];
 
+		// if eviction target was dirty, must stream-out
         if(block->dirty == 1) {
-            cache->writes++;
+            cache->stream_outs++;
+            cache->cycles += 50;
         }        
         
+        // allocate-on-write policy -> overwritten data is in cache
+        // must set the dirty & valid bits
         block->dirty = 1;
         block->valid = 1;
         block->timestamp = mem_accesses;
         
+        // if evicted data was valid, log an eviction
         if(block->tag != NULL) {
         	cache->evictions++;
             free(block->tag);
         }
         
+        // replace victim tag with new block's tag
         block->tag = tag;
     }
     
@@ -900,12 +927,14 @@ int writeToCache(Cache cache, char* address)
  * @return      void
  */
 
-void printCache(Cache cache)
-{
+void printCache(Cache cache) {
     int i;
     int j;
 
-    int cache_total = (int) (cache->hits) + (cache->misses);
+    int cache_total = (int) (cache->reads) + (cache->writes);
+    int cache_hits = (int) (cache->read_hits) + (cache->write_hits);
+    int cache_misses = (int) (cache->read_misses) + (cache->write_misses);
+
     char* tag;
     
     if(cache != NULL) {
@@ -934,17 +963,28 @@ void printCache(Cache cache)
 
         printf("\nCache performance:\n\n");
 
-        printf("\tCache hits: %d\n", cache->hits);
-        printf("\tCache misses: %d\n", cache->misses);
-        printf("\tCache total access: %d\n\n", cache_total);
+        printf("\tAttempted reads: %d\n", cache->reads);
+        printf("\tCache read hits: %d\n", cache->read_hits);
+        printf("\tCache read misses: %d\n\n", cache->read_misses);
 
-        printf("\tCache hit ratio: %2.2f%%\n", ((float) (cache->hits) / (float) (cache_total) ) * 100);
-        printf("\tCache miss ratio: %2.2f%%\n\n", ((float) (cache->misses) / (float) (cache_total) ) * 100);
+        printf("\tAttempted writes: %d\n", cache->writes);
+        printf("\tCache write hits: %d\n", cache->write_hits);
+        printf("\tCache write misses: %d\n\n", cache->write_misses);
 
-        printf("\tMemory reads: %d\n", cache->reads);
-        printf("\tMemory writes: %d\n\n", cache->writes);
+        printf("\tCache hits: %d\n", cache_hits);
+        printf("\tCache misses: %d\n", cache_misses);
+        printf("\tTotal accesses: %d\n\n", cache_total);
 
-        printf("\tCache evictions: %d\n\n", cache->evictions);
+        printf("\tCache hit ratio: %2.2f%%\n", ((float) (cache_hits) / (float) (cache_total) ) * 100);
+        printf("\tCache miss ratio: %2.2f%%\n\n", ((float) (cache_misses) / (float) (cache_total) ) * 100);
+
+        printf("\tStream-in operations: %d\n", cache->stream_ins);
+        printf("\tCache evictions: %d\n", cache->evictions);
+        printf("\tStream-out operations: %d\n\n", cache->stream_outs);
+
+        printf("\tCycles with cache: %d\n", cache->cycles);
+        printf("\tCycles without cache: %d\n\n", 50*cache_total);
 
     }
+
 }
