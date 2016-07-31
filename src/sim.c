@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 #include <assert.h>
 #include <string.h>
@@ -29,7 +30,8 @@
  *
  * Holds an integer that states the validity of the bit (0 = invalid,
  * 1 = valid), the tag being held, and another integer that states if
- * the bit is dirty or not (0 = clean, 1 = dirty).
+ * the bit is dirty or not (0 = clean, 1 = dirty). Also holds the
+ * timestamp for when the block was most recently updated (0 = oldest)
  */
 
 struct Block_ {
@@ -41,8 +43,8 @@ struct Block_ {
 
 /* Way
  *
- * Holds an integer about which way number it is (1 - 8),
- * and integer for the number of blocks, and an array of blocks.
+ * Holds an integer about which way number it is (1 - 4),
+ * and an array of blocks.
  */
 
 struct Way_ {
@@ -55,14 +57,20 @@ struct Way_ {
  * Cache object that holds all the data about cache access as well as 
  * the sizes and an array of ways.
  *
- * @param   hits            # of cache accesses that hit valid data
- * @param   misses          # of cache accesses that missed valid data
- * @param   reads           # of reads from main memory
- * @param   writes          # of writes from main memory
- * @param   cache_size      Total size of the cache in bytes
- * @param   block_size      How big each block of data should be
+ * @param   reads           # of attempted reads by the trace input
+ * @param 	read_hits 		# of reads that hit successfully in the cache
+ * @param   read_misses 	# of reads that missed in the cache
+ * @param   writes          # of attempted writes by the trace input
+ * @param 	write_hits 		# of writes that hit successfully in the cache
+ * @param 	write_misses 	# of writes that missed in the cache
+ * @param 	cycles 			# of cycle currently elapsed in simulation
+ * @param 	stream_ins 		# of stream-in operations from memory to cache
+ * @param 	stream_outs 	# of stream_out operations from cache to memory
+ * @param 	evictions 		# of valid blocks evicted from cache by LRU policy
+ * @param   cache_size      total size of the cache in bytes
+ * @param   block_size      how big each block of data is in bytes
  * @param 	associativity	# of ways
- * @param   ways          	The actual array of ways
+ * @param   ways          	pointer to the actual array of ways
  */
 
 
@@ -83,7 +91,7 @@ struct Cache_ {
     Way* ways;
 };
 
-// global variables for cache bits
+// global variables for binary address bits
 
 int bitsTag = 0;
 int bitsIndex = 0;
@@ -97,15 +105,6 @@ int mem_accesses = 0;
  *     3. Utility Functions     *
  ********************************/
  
-/* Function List:
- *
- * 1) htoi
- * 2) getBinary
- * 3) formatBinary
- * 4) btoi
- * 5) parseMemoryAddress
- */
-
 /* htoi
  *
  * Converts hexidecimal memory locations to unsigned integers.
@@ -113,8 +112,8 @@ int mem_accesses = 0;
  * over any non recognized characters.
  */
  
-unsigned int htoi(const char str[])
-{
+unsigned int htoi(const char str[]) {
+
     /* Local Variables */
     unsigned int result;
     int i;
@@ -122,22 +121,22 @@ unsigned int htoi(const char str[])
     i = 0;
     result = 0;
     
-    if(str[i] == '0' && str[i+1] == 'x')
-    {
+    if(str[i] == '0' && str[i+1] == 'x') {
         i = i + 2;
     }
 
-    while(str[i] != '\0')
-    {
+    while(str[i] != '\0') {
+
         result = result * 16;
-        if(str[i] >= '0' && str[i] <= '9')
-        {
+
+        if(str[i] >= '0' && str[i] <= '9') {
             result = result + (str[i] - '0');
         }
-        else if(tolower(str[i]) >= 'a' && tolower(str[i]) <= 'f')
-        {
+
+        else if(tolower(str[i]) >= 'a' && tolower(str[i]) <= 'f') {
             result = result + (tolower(str[i]) - 'a') + 10;
         }
+
         i++;
     }
 
@@ -155,8 +154,8 @@ unsigned int htoi(const char str[])
  * @result  char*       binary string
  */
  
-char *getBinary(unsigned int num)
-{
+char *getBinary(unsigned int num) {
+
     char* bstring;
     int i;
     
@@ -167,8 +166,7 @@ char *getBinary(unsigned int num)
     
     bstring[32] = '\0';
     
-    for( i = 0; i < 32; i++ )
-    {
+    for( i = 0; i < 32; i++ ) {
         bstring[32 - 1 - i] = (num == ((1 << i) | num)) ? '1' : '0';
     }
     
@@ -177,25 +175,25 @@ char *getBinary(unsigned int num)
 
 /* formatBinary
  *
- * Converts a 32 bit long binary string to a formatted version
+ * Converts a binary string to a formatted version
  * for easier parsing. The format is determined by the bitsTag, bitsIndex,
  * and bitsOffset variables.
  *
  * Ex. Format:
  *  -----------------------------------------------------
- * | Tag: 18 bits | Index: 12 bits | Byte Select: 4 bits |
+ * | Tag: 18 bits | Index: 10 bits | Byte Select: 5 bits |
  *  -----------------------------------------------------
  *
  * Ex. Result:
- * 000000000010001110 101111011111 00
+ * 101010101010101010 1010101010 10101
  *
  * @param   bstring     binary string to be converted
  *
  * @result  char*       formated binary string
  */
 
-char *formatBinary(char *bstring)
-{
+char *formatBinary(char *bstring) {
+
     char *formatted;
     int i;
     
@@ -204,24 +202,21 @@ char *formatBinary(char *bstring)
     formatted = (char *) malloc(sizeof(char) * 35);
     assert(formatted != NULL);
     
-    formatted[34] = '\0';
+    formatted[ADDRESS_SIZE+2] = '\0';
     
-    for(i = 0; i < bitsTag; i++)
-    {
+    for(i = 0; i < bitsTag; i++) {
         formatted[i] = bstring[i];
     }
     
     formatted[bitsTag] = ' ';
     
-    for(i = bitsTag + 1; i < bitsIndex + bitsTag + 1; i++)
-    {
+    for(i = bitsTag + 1; i < bitsIndex + bitsTag + 1; i++) {
         formatted[i] = bstring[i - 1];
     }
     
     formatted[bitsIndex + bitsTag + 1] = ' ';
     
-    for(i = bitsIndex + bitsTag + 2; i < bitsOffset + bitsIndex + bitsTag + 2; i++)
-    {
+    for(i = bitsIndex + bitsTag + 2; i < bitsOffset + bitsIndex + bitsTag + 2; i++) {
         formatted[i] = bstring[i - 2];
     }
 
@@ -239,25 +234,25 @@ char *formatBinary(char *bstring)
  * @result  int     decimal representation of binary string
  */
 
-int btoi(char *bin)
-{
+int btoi(char *bin) {
+
     int  b, k, m, n;
     int  len, sum;
 
     sum = 0;
     len = strlen(bin) - 1;
 
-    for(k = 0; k <= len; k++)
-    {
-        n = (bin[k] - '0'); 
-        if ((n > 1) || (n < 0))
-        {
+    for(k = 0; k <= len; k++) {
+        n = (bin[k] - '0');
+
+        if ((n > 1) || (n < 0)) {
             return 0;
         }
-        for(b = 1, m = len; m > k; m--)
-        {
+
+        for(b = 1, m = len; m > k; m--) {
             b *= 2;
         }
+
         sum = sum + n * b;
     }
     return(sum);
@@ -275,8 +270,8 @@ int btoi(char *bin)
  * @return      void
  */
 
-void parseMemoryAddress(char *address)
-{
+void parseMemoryAddress(char *address) {
+
     unsigned int dec;
     char *bstring, *bformatted, *tag, *index, *offset;
     int i;
@@ -285,8 +280,7 @@ void parseMemoryAddress(char *address)
     bstring = getBinary(dec);
     bformatted = formatBinary(bstring);
     
-    if(DEBUG)
-    {
+    if(DEBUG) {
         printf("Hex: %s\n", address);
         printf("Decimal: %u\n", dec);
         printf("Binary: %s\n", bstring);
@@ -299,8 +293,7 @@ void parseMemoryAddress(char *address)
     assert(tag != NULL);
     tag[bitsTag] = '\0';
     
-    for(i = 0; i < bitsTag; i++)
-    {
+    for(i = 0; i < bitsTag; i++) {
         tag[i] = bformatted[i];
     }
     
@@ -308,8 +301,7 @@ void parseMemoryAddress(char *address)
     assert(index != NULL);
     index[bitsIndex] = '\0';
     
-    for(i = bitsTag + 1; i < bitsIndex + bitsTag + 1; i++)
-    {
+    for(i = bitsTag + 1; i < bitsIndex + bitsTag + 1; i++) {
         index[i - bitsTag - 1] = bformatted[i];
     }
     
@@ -317,8 +309,7 @@ void parseMemoryAddress(char *address)
     assert(offset != NULL);
     offset[bitsOffset] = '\0';
     
-    for(i = bitsIndex + bitsTag + 2; i < bitsOffset + bitsIndex + bitsTag + 2; i++)
-    {
+    for(i = bitsIndex + bitsTag + 2; i < bitsOffset + bitsIndex + bitsTag + 2; i++) {
         offset[i - bitsIndex - bitsTag - 2] = bformatted[i];
     }
     
@@ -346,14 +337,14 @@ void parseMemoryAddress(char *address)
 
 int main(int argc, char **argv) {
 
-    /* Local Variables */
-    int counter, i, j;
+	int counter, i, j;
     Cache cache;
     FILE *file;
     char mode, address[100];
     
     /* Technically a line shouldn't be longer than 25 characters, but
        allocate extra space in the buffer just in case */
+
     char buffer[LINELENGTH];
 
     /* Help Menu
@@ -369,16 +360,17 @@ int main(int argc, char **argv) {
     }
     
 
-    // calculate other cache parameters
+    /* calculate other cache parameters */
 
     bitsOffset = floor(log2(BLOCK_SIZE));
     bitsIndex = floor(log2(NUMBER_OF_SETS));
     bitsTag = ADDRESS_SIZE - (bitsOffset + bitsIndex);
 
     /* Open the file for reading. */
+
     file = fopen( argv[1], "r" );
-    if( file == NULL )
-    {
+
+    if( file == NULL ) {
         fprintf(stderr, "Error: Could not open file.\n");
         return 0; 
     }
@@ -387,18 +379,16 @@ int main(int argc, char **argv) {
 
     counter = 0;
     
-    while( fgets(buffer, LINELENGTH, file) != NULL )
-    {
-        if(buffer[0] != '#')
-        {
+    while( fgets(buffer, LINELENGTH, file) != NULL ) {
+
+        if(buffer[0] != '#') {
             i = 0;
             mode = buffer[i];
 
             i += 2;
             j = 0;
             
-            while(buffer[i] != '\0')
-            {
+            while(buffer[i] != '\0') {
                 address[j] = buffer[i];
                 i++;
                 j++;
@@ -467,39 +457,35 @@ int main(int argc, char **argv) {
  * @return  failure         NULL
  */
 
-Cache createCache(int cache_size, int block_size, int associativity)
-{
-    /* Local Variables */
-    Cache cache;
+Cache createCache(int cache_size, int block_size, int associativity) {
+
+	Cache cache;
     int i = 0;
     int j = 0;
     
     /* Validate Inputs */
-    if(cache_size <= 0)
-    {
+    if(cache_size <= 0) {
         fprintf(stderr, "Cache size must be greater than 0 bytes...\n");
         return NULL;
     }
     
-    if(block_size <= 0)
-    {
+    if(block_size <= 0) {
         fprintf(stderr, "Block size must be greater than 0 bytes...\n");
         return NULL;
     }
     
     
-    /* Lets make a cache! */
-
-    // allocate all the memory needed for a cache structure
+    /* Lets make a cache!
+     * allocate all the memory needed for a cache structure */
 
     cache = (Cache) malloc( sizeof( struct Cache_ ) );
-    if(cache == NULL)
-    {
+
+    if(cache == NULL) {
         fprintf(stderr, "Could not allocate memory for cache.\n");
         return NULL;
     }
     
-    // take care of most parameters
+    /* Initialize the cache parameters */
 
     cache->reads = 0;
     cache->read_hits = 0;
@@ -519,31 +505,35 @@ Cache createCache(int cache_size, int block_size, int associativity)
     cache->block_size = block_size;
     cache->associativity = associativity;
 
-    // allocate all the memory for ALL ways
+    /* Allocate all the memory for ALL ways */
+
 	cache->ways = (Way*) malloc( sizeof(Way) * associativity );
 	assert(cache->ways != NULL);
 
     for(j = 0; j < associativity; j++) {
 
-    	// allocate memory for this INDIVIDUAL way
+    	/* Allocate memory for this INDIVIDUAL way */
+
 		cache->ways[j] = (Way) malloc( sizeof( struct Way_ ) );
 		assert(cache->ways[j] != NULL);
 
     	cache->ways[j]->waynum = j;
 
-		// allocate space for ALL Blocks
+		/* Allocate space for ALL Blocks */
+
 		cache->ways[j]->blocks = (Block*) malloc( sizeof(Block) * NUMBER_OF_SETS );
 		assert(cache->ways[j]->blocks != NULL);
 
 		/* By default insert blocks where valid = 0 */
-
 		for(i = 0; i < NUMBER_OF_SETS; i++) {
 
-			// allocate memory for this INDIVIDUAL block
+			/* Allocate memory for this INDIVIDUAL block */
+
 			cache->ways[j]->blocks[i] = (Block) malloc( sizeof( struct Block_ ) );
 			assert(cache->ways[j]->blocks[i] != NULL);
 
-			// take care of other parameters for this block
+			/* Initialize parameters for this block */
+
 			cache->ways[j]->blocks[i]->valid = 0;
 			cache->ways[j]->blocks[i]->dirty = 0;
 			cache->ways[j]->blocks[i]->tag = NULL;
@@ -573,25 +563,28 @@ void destroyCache(Cache cache) {
     
     if(cache != NULL) {
 
-    	// deallocate ALL ways in this cache
+    	/* Deallocate ALL ways in this cache */
     	for (j = 0; j < ASSOCIATIVITY; j++) {
 
-    		// deallocate ALL blocks in this way
+    		/* Deallocate ALL blocks in this way */
 			for( i = 0; i < NUMBER_OF_SETS; i++ ) {
 
-				// check if the block entry is NULL
+				/* Check if the block entry is NULL */
+
 				if(cache->ways[j]->blocks[i]->tag != NULL) {
 					free(cache->ways[j]->blocks[i]->tag);
 				}
 
-				// deallocate this INDIVIDUAL block
+				/* Deallocate this INDIVIDUAL block */
 				free(cache->ways[j]->blocks[i]);
 			}
 
-			// deallocate this INDIVIDUAL way
+			/* Deallocate this INDIVIDUAL way */
+
 			free(cache->ways[j]->blocks);
 			free(cache->ways[j]);
     	}
+
         free(cache->ways);
         free(cache);
     }
@@ -611,15 +604,15 @@ void destroyCache(Cache cache) {
  * @return      failure     0
  */
 
-int readFromCache(Cache cache, char* address)
-{
+int readFromCache(Cache cache, char* address) {
+
     unsigned int dec;
     char *bstring, *bformatted, *tag, *index, *offset;
     int i;
     int j;
     int LRU;
     int LRU_access_num;
-    int noHit = 1;
+    bool noHit = true;
 
     Block block;
     
@@ -641,7 +634,7 @@ int readFromCache(Cache cache, char* address)
     bstring = getBinary(dec);
     bformatted = formatBinary(bstring);
     
-    // print cache address bits for debugging
+    /* Print cache address bits for debugging */
 
     if(DEBUG) {
         printf("\tHex: %s\n", address);
@@ -676,7 +669,7 @@ int readFromCache(Cache cache, char* address)
         offset[i - bitsIndex - bitsTag - 2] = bformatted[i];
     }
     
-    // print tag + index + offset for debugging
+    /* Print tag + index + offset for debugging */
 
     if(DEBUG) {
         printf("\tTag: %s (%i)\n", tag, btoi(tag));
@@ -687,19 +680,21 @@ int readFromCache(Cache cache, char* address)
     /* Get the block */
 	if(DEBUG) printf("\tAttempting to read data from cache slot %i.\n", btoi(index));
 
-	// increment another attempted read access
+	/* Increment an attempted read access */
 	cache->reads++;
 
-	// check through all 4 ways of the cache
+	/* Check through ALL 4 ways of the cache for that particular block */
     for(j = 0; j < ASSOCIATIVITY; j++) {
 
 		block = cache->ways[j]->blocks[btoi(index)];
 
-		// if there's a cache hit (valid && tags match)
+		/* if there's a cache hit (valid && tags match) */
+
 		if(block->valid == 1 && strcmp(block->tag, tag) == 0) {
+
 			cache->read_hits++;
 			cache->cycles += 1;
-			noHit = 0;
+			noHit = false;
 			block->timestamp = mem_accesses;
 			if (DEBUG) printf("\tCache hit on Way %d. Block timestamp updated to %d.\n", j, mem_accesses);
 			free(tag);
@@ -707,8 +702,9 @@ int readFromCache(Cache cache, char* address)
 
     }
 
-	// otherwise, cache miss - implement LRU here
-	if (noHit == 1) {
+	/* Otherwise, cache miss - implement LRU here */
+
+	if (noHit == true) {
 
 		cache->read_misses++;
 		cache->stream_ins++;
@@ -716,7 +712,8 @@ int readFromCache(Cache cache, char* address)
 
         LRU_access_num = mem_accesses;
 
-        // search through blocks in all 4 ways to find LRU
+        /* Search through blocks in all 4 ways to find LRU */
+
         for (j = 0; j < ASSOCIATIVITY; j++) {
 
             block = cache->ways[j]->blocks[btoi(index)];
@@ -727,11 +724,12 @@ int readFromCache(Cache cache, char* address)
             }
         }
 
-        // evict LRU and log cache parameters
+        /* evict LRU and update cache statistics */
 		if (DEBUG) printf("\tCache miss - eviction on Way %d. Block timestamp updated to %d.\n", LRU, mem_accesses);
         block = cache->ways[LRU]->blocks[btoi(index)];
 
-        // if data was dirty, need to stream-out and reset dirty bit
+        /* if data was dirty, need to stream-out and reset dirty bit */
+
 		if(block->dirty == 1) {
 			cache->stream_outs++;
 			cache->cycles += 50;
@@ -741,13 +739,14 @@ int readFromCache(Cache cache, char* address)
 		block->valid = 1;
         block->timestamp = mem_accesses;
 
-        // if valid data got evicted, log an eviction
+        /* if non-null data got evicted, log an eviction */
+
 		if(block->tag != NULL) {
 			cache->evictions++;
 			free(block->tag);
 		}
 
-		// replace victim tag with incoming block's tag
+		/* replace victim tag with incoming block's tag */
 		block->tag = tag;
 
 	}
@@ -781,7 +780,7 @@ int writeToCache(Cache cache, char* address) {
     Block block;
     int LRU;
     int LRU_access_num;
-    int noHit = 1;
+    bool noHit = true;
     
     /* Validate inputs */
     if(cache == NULL) {
@@ -843,16 +842,21 @@ int writeToCache(Cache cache, char* address) {
     
     if(DEBUG) printf("\tAttempting to write data to cache slot %i.\n", btoi(index));
 
-    // log another attempted write access
+    /* Log another attempted write access */
+
     cache->writes++;
+
+    /* Check through ALL 4 ways for that particular block */
 
     for (j = 0; j < ASSOCIATIVITY; j++) {
 
         block = cache->ways[j]->blocks[btoi(index)];
 
-        // if there was a write hit (valid bit set && tags match)
+        /* if there was a write hit (valid bit set && tags match) */
+
         if(block->valid == 1 && strcmp(block->tag, tag) == 0) {
-            noHit = 0;
+
+            noHit = false;
             block->dirty = 1;
             block->timestamp = mem_accesses;
             cache->write_hits++;
@@ -863,8 +867,9 @@ int writeToCache(Cache cache, char* address) {
     }
 
 
-    // cache miss - implement LRU here
-    if (noHit == 1) {
+    /* cache miss - implement LRU here */
+
+    if (noHit == true) {
 
         cache->write_misses++;
         cache->stream_ins++;
@@ -872,7 +877,8 @@ int writeToCache(Cache cache, char* address) {
         
         LRU_access_num = mem_accesses;
 
-        // search through all 4 ways looking for LRU block
+        /* search through all 4 ways looking for LRU block */
+
         for (j = 0; j < ASSOCIATIVITY; j++) {
 
             block = cache->ways[j]->blocks[btoi(index)];
@@ -883,29 +889,33 @@ int writeToCache(Cache cache, char* address) {
             }
         }
 
-        // evict the LRU block & log cache parameters
+        /* evict the LRU block & update cache statistics */
+
 		if (DEBUG) printf("\tCache miss - eviction on Way %d. Block timestamp updated to %d.\n", LRU, mem_accesses);
 		block = cache->ways[LRU]->blocks[btoi(index)];
 
-		// if eviction target was dirty, must stream-out
+		/* if eviction target was dirty, must stream-out */
+
         if(block->dirty == 1) {
             cache->stream_outs++;
             cache->cycles += 50;
         }        
         
-        // allocate-on-write policy -> overwritten data is in cache
-        // must set the dirty & valid bits
+        /* allocate-on-write policy -> overwritten data is in cache
+         * must set the dirty & valid bits */
+
         block->dirty = 1;
         block->valid = 1;
         block->timestamp = mem_accesses;
         
-        // if evicted data was valid, log an eviction
+        /* if evicted data was non-null, log an eviction */
+
         if(block->tag != NULL) {
         	cache->evictions++;
             free(block->tag);
         }
         
-        // replace victim tag with new block's tag
+        /* replace victim tag with new block's tag */
         block->tag = tag;
     }
     
@@ -928,8 +938,11 @@ int writeToCache(Cache cache, char* address) {
  */
 
 void printCache(Cache cache) {
+
     int i;
     int j;
+
+    /* define some local integers to hold count totals */
 
     int cache_total = (int) (cache->reads) + (cache->writes);
     int cache_hits = (int) (cache->read_hits) + (cache->write_hits);
@@ -938,21 +951,28 @@ void printCache(Cache cache) {
     char* tag;
     
     if(cache != NULL) {
+
+    	/* Printing cache contents at the end of simulation
+    	 * if the debug flag was set */
+
     	if (DEBUG) {
-
     		for (j = 0; j < ASSOCIATIVITY; j++) {
-
     			printf("\n\n******** Way # %d ********\n\n", cache->ways[j]->waynum);
 
 				for(i = 0; i < NUMBER_OF_SETS; i++) {
+
 					tag = "NULL";
+
 					if(cache->ways[j]->blocks[i]->tag != NULL) {
 						tag = cache->ways[j]->blocks[i]->tag;
 					}
+
 					printf("\t[%i]: { valid: %i, tag: %s }\n", i, cache->ways[j]->blocks[i]->valid, tag);
 				}
     		}
     	}
+
+    	/* Printing cache statistics to the console */
 
         printf("\nCache parameters:\n\n");
 
