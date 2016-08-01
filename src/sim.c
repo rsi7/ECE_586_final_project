@@ -381,42 +381,68 @@ int main(int argc, char **argv) {
     
     while( fgets(buffer, LINELENGTH, file) != NULL ) {
 
+    	/* Check for #eof statement - skip text processing once encountered */
         if(buffer[0] != '#') {
-            i = 0;
-            mode = buffer[i];
 
-            i += 2;
-            j = 0;
+        	i = 0;
+
+            /* keep processing line until you hit newline character */
+            while(buffer[i] != '\n') {
+
+            	/* capture the r/w character into mode variable*/
+            	mode = buffer[i];
+
+            	/* push index forward to hex address */
+            	i += 2;
+            	j = 0;
+
+            	/* keep storing hex address in buffer
+            	 * until space or newline is encountered */
+
+            	while(buffer[i] != ' ' && buffer[i] != '\n') {
+            		address[j] = buffer[i];
+            		i++;
+            		j++;
+            	}
+
+            	/* terminate address buffer with NULL for helper function */
+            	address[j] = '\0';
+
+            	/* if last character is NULL, leave index where it is
+            	 * otherwise, move index forward to next memory access*/
+            	if(buffer[i] != '\n'){
+            		i++;
+            	}
             
-            while(buffer[i] != '\0') {
-                address[j] = buffer[i];
-                i++;
-                j++;
-            }
-            
-            address[j-1] = '\0';
-            
-            if(DEBUG) printf("\nLine %i: Mode %c -- Address %s\n\n", counter+1, mode, address);
-            
-            if(mode == '0') {
+            	/* print address if debug flag is set */
+            	if(DEBUG) printf("\nAccess %i: Mode %c -- Address %s\n\n", counter+1, mode, address);
+
             	mem_accesses++;
-                readFromCache(cache, address);
-            }
+            
+            	/* call read function with address buffer */
+            	if(mode == 'r') {
+            		readFromCache(cache, address);
+            	}
 
-            else if(mode == '1') {
-            	mem_accesses++;
-                writeToCache(cache, address);
-            }
+            	/* call write function with address buffer */
+            	else if(mode == 'w') {
+            		writeToCache(cache, address);
+            	}
 
-            else {
-                printf("%i: ERROR!!!!\n", counter);
-                fclose(file);
-                destroyCache(cache);
-                cache = NULL;
+            	/* if no valid mode detected, terminate program
+            	 * after freeing cache memory & closing file safely */
+
+            	else {
+            		printf("%i: ERROR!!!!\n", counter);
+            		fclose(file);
+            		destroyCache(cache);
+            		cache = NULL;
                 
-                return 0;
+            		return 0;
+            	}
+
+            	counter++;
             }
-            counter++;
         }
     }
 
