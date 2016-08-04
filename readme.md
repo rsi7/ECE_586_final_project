@@ -6,7 +6,9 @@ This project simulates a single-level blocking cache using a trace file. The cac
 `Usage: ./CacheSim <trace file> [-v] [-t] [-d]`
 
 `[-v]` will include program version information in the output.
+
 `[-t]` will include information about the trace accesses in the output (r/w, tag, offset, etc.)
+
 `[-d]` will dump the final cache contents in the output (valid, dirty, tag, etc.)
 
 Trace file must be specified immediately after program executable.
@@ -50,15 +52,15 @@ The project is structured as follows:
 
 ## Design & Implementation:
 The main algorithm was the following:
-    1. Validate input arguments   
-    2. Open the trace file for reading   
-    3. Create a new Cache object
-    4. Read a line from the file
-    5. Parse the line and read or write accordingly
-    6. If the line is "#eof" continue, otherwise go back to step 4
-    7. Print the results
-    8. Destroy the Cache object
-    9. Close the file   
+    1) Validate input arguments
+    2) Open the trace file for reading
+    3) Create a new Cache object
+    4) Read a line from the file
+    5) Parse the line and read or write accordingly
+    6) If the line is "#eof" continue, otherwise go back to step 4
+    7) Print the results
+    8) Destroy the Cache object
+    9) Close the file   
 
 The functions were separated into three main groups: the main function, cache functions, and utility functions. The main function executed the algorithm listed above. The utility functions were used to convert hexadecimal memory addresses to various binary and decimal equivalents.     
 
