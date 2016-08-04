@@ -31,7 +31,6 @@ The project is structured as follows:
 	    * CacheSim.c
 	    * CacheSim.h
 	traces/
-	    - trace_0.txt
 	    - trace_1.txt
 	    - trace_2.txt
 	    - trace_3.txt
@@ -43,7 +42,6 @@ The project is structured as follows:
 	    - trace_9.txt
 	    - trace_10.txt
 	output/
-	    + trace_0_output.txt
 	    + trace_1_output.txt
 	    + trace_2_output.txt
 	    + trace_3_output.txt
