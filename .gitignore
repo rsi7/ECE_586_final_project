@@ -7,5 +7,5 @@ $cat .gitignore
 
 /docs/*
 
-#ignore everything in output
-/output/*
+#ignore everything in executables
+/exe/*

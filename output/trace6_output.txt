@@ -1,0 +1,149 @@
+
+
+************************ CacheSim v1.0 ************************
+************************* Rehan Iqbal *************************
+************************* PSU ECE 586 *************************
+
+Access 1: Mode w -- Address 0x00004010
+
+	Hex: 0x00004010
+	Decimal: 16400
+	Binary: 00000000000000000100000000010000
+	Formatted: 00000000000000000 1000000000 10000
+
+	Tag: 00000000000000000 (0)
+	Index: 1000000000 (512)
+	Offset: 10000 (16)
+
+	Attempting to write data to cache slot 512.
+	Cache miss - eviction on Way 0. Block timestamp updated to 1.
+
+Access 2: Mode w -- Address 0x10004010
+
+	Hex: 0x10004010
+	Decimal: 268451856
+	Binary: 00010000000000000100000000010000
+	Formatted: 00010000000000000 1000000000 10000
+
+	Tag: 00010000000000000 (8192)
+	Index: 1000000000 (512)
+	Offset: 10000 (16)
+
+	Attempting to write data to cache slot 512.
+	Cache miss - eviction on Way 1. Block timestamp updated to 2.
+
+Access 3: Mode w -- Address 0x20004010
+
+	Hex: 0x20004010
+	Decimal: 536887312
+	Binary: 00100000000000000100000000010000
+	Formatted: 00100000000000000 1000000000 10000
+
+	Tag: 00100000000000000 (16384)
+	Index: 1000000000 (512)
+	Offset: 10000 (16)
+
+	Attempting to write data to cache slot 512.
+	Cache miss - eviction on Way 2. Block timestamp updated to 3.
+
+Access 4: Mode w -- Address 0x30004010
+
+	Hex: 0x30004010
+	Decimal: 805322768
+	Binary: 00110000000000000100000000010000
+	Formatted: 00110000000000000 1000000000 10000
+
+	Tag: 00110000000000000 (24576)
+	Index: 1000000000 (512)
+	Offset: 10000 (16)
+
+	Attempting to write data to cache slot 512.
+	Cache miss - eviction on Way 3. Block timestamp updated to 4.
+
+Access 5: Mode w -- Address 0x00004010
+
+	Hex: 0x00004010
+	Decimal: 16400
+	Binary: 00000000000000000100000000010000
+	Formatted: 00000000000000000 1000000000 10000
+
+	Tag: 00000000000000000 (0)
+	Index: 1000000000 (512)
+	Offset: 10000 (16)
+
+	Attempting to write data to cache slot 512.
+	Cache hit on Way 0. Block timestamp updated to 5.
+
+Access 6: Mode w -- Address 0x40004010
+
+	Hex: 0x40004010
+	Decimal: 1073758224
+	Binary: 01000000000000000100000000010000
+	Formatted: 01000000000000000 1000000000 10000
+
+	Tag: 01000000000000000 (32768)
+	Index: 1000000000 (512)
+	Offset: 10000 (16)
+
+	Attempting to write data to cache slot 512.
+	Cache miss - eviction on Way 1. Block timestamp updated to 6.
+
+Access 7: Mode w -- Address 0x20004010
+
+	Hex: 0x20004010
+	Decimal: 536887312
+	Binary: 00100000000000000100000000010000
+	Formatted: 00100000000000000 1000000000 10000
+
+	Tag: 00100000000000000 (16384)
+	Index: 1000000000 (512)
+	Offset: 10000 (16)
+
+	Attempting to write data to cache slot 512.
+	Cache hit on Way 2. Block timestamp updated to 7.
+
+Access 8: Mode w -- Address 0x50004010
+
+	Hex: 0x50004010
+	Decimal: 1342193680
+	Binary: 01010000000000000100000000010000
+	Formatted: 01010000000000000 1000000000 10000
+
+	Tag: 01010000000000000 (40960)
+	Index: 1000000000 (512)
+	Offset: 10000 (16)
+
+	Attempting to write data to cache slot 512.
+	Cache miss - eviction on Way 3. Block timestamp updated to 8.
+
+Cache parameters:
+
+	Cache size: 131072
+	Cache block size: 32
+	Cache number of lines: 1024
+	Cache associativity: 4
+
+Cache performance:
+
+	Attempted reads: 0
+	Cache read hits: 0
+	Cache read misses: 0
+
+	Attempted writes: 8
+	Cache write hits: 2
+	Cache write misses: 6
+
+	Cache hits: 2
+	Cache misses: 6
+	Total accesses: 8
+
+	Cache hit ratio: 25.00%
+	Cache miss ratio: 75.00%
+
+	Stream-in operations: 6
+	Cache evictions: 2
+	Stream-out operations: 2
+
+	Cycles with cache: 408
+	Cycles without cache: 400
+

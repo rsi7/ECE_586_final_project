@@ -1,0 +1,32 @@
+
+Cache parameters:
+
+	Cache size: 131072
+	Cache block size: 32
+	Cache number of lines: 1024
+	Cache associativity: 4
+
+Cache performance:
+
+	Attempted reads: 3000
+	Cache read hits: 2975
+	Cache read misses: 25
+
+	Attempted writes: 1000
+	Cache write hits: 1000
+	Cache write misses: 0
+
+	Cache hits: 3975
+	Cache misses: 25
+	Total accesses: 4000
+
+	Cache hit ratio: 99.38%
+	Cache miss ratio: 0.62%
+
+	Stream-in operations: 25
+	Cache evictions: 0
+	Stream-out operations: 0
+
+	Cycles with cache: 5250
+	Cycles without cache: 200000
+

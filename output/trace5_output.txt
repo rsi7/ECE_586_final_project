@@ -1,0 +1,1157 @@
+
+
+************************ CacheSim v1.0 ************************
+************************* Rehan Iqbal *************************
+************************* PSU ECE 586 *************************
+
+Access 1: Mode r -- Address 0x00001000
+
+	Hex: 0x00001000
+	Decimal: 4096
+	Binary: 00000000000000000001000000000000
+	Formatted: 00000000000000000 0010000000 00000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000000 (128)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 128.
+	Cache miss - eviction on Way 0. Block timestamp updated to 1.
+
+Access 2: Mode r -- Address 0x00045200
+
+	Hex: 0x00045200
+	Decimal: 283136
+	Binary: 00000000000001000101001000000000
+	Formatted: 00000000000001000 1010010000 00000
+
+	Tag: 00000000000001000 (8)
+	Index: 1010010000 (656)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 656.
+	Cache miss - eviction on Way 0. Block timestamp updated to 2.
+
+Access 3: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache miss - eviction on Way 0. Block timestamp updated to 3.
+
+Access 4: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 4.
+
+Access 5: Mode r -- Address 0x00001008
+
+	Hex: 0x00001008
+	Decimal: 4104
+	Binary: 00000000000000000001000000001000
+	Formatted: 00000000000000000 0010000000 01000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000000 (128)
+	Offset: 01000 (8)
+
+	Attempting to read data from cache slot 128.
+	Cache hit on Way 0. Block timestamp updated to 5.
+
+Access 6: Mode r -- Address 0x00045840
+
+	Hex: 0x00045840
+	Decimal: 284736
+	Binary: 00000000000001000101100001000000
+	Formatted: 00000000000001000 1011000010 00000
+
+	Tag: 00000000000001000 (8)
+	Index: 1011000010 (706)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 706.
+	Cache miss - eviction on Way 0. Block timestamp updated to 6.
+
+Access 7: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 7.
+
+Access 8: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 8.
+
+Access 9: Mode r -- Address 0x00001010
+
+	Hex: 0x00001010
+	Decimal: 4112
+	Binary: 00000000000000000001000000010000
+	Formatted: 00000000000000000 0010000000 10000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000000 (128)
+	Offset: 10000 (16)
+
+	Attempting to read data from cache slot 128.
+	Cache hit on Way 0. Block timestamp updated to 9.
+
+Access 10: Mode r -- Address 0x00045280
+
+	Hex: 0x00045280
+	Decimal: 283264
+	Binary: 00000000000001000101001010000000
+	Formatted: 00000000000001000 1010010100 00000
+
+	Tag: 00000000000001000 (8)
+	Index: 1010010100 (660)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 660.
+	Cache miss - eviction on Way 0. Block timestamp updated to 10.
+
+Access 11: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 11.
+
+Access 12: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 12.
+
+Access 13: Mode r -- Address 0x00001018
+
+	Hex: 0x00001018
+	Decimal: 4120
+	Binary: 00000000000000000001000000011000
+	Formatted: 00000000000000000 0010000000 11000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000000 (128)
+	Offset: 11000 (24)
+
+	Attempting to read data from cache slot 128.
+	Cache hit on Way 0. Block timestamp updated to 13.
+
+Access 14: Mode r -- Address 0x00050480
+
+	Hex: 0x00050480
+	Decimal: 328832
+	Binary: 00000000000001010000010010000000
+	Formatted: 00000000000001010 0000100100 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 0000100100 (36)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 36.
+	Cache miss - eviction on Way 0. Block timestamp updated to 14.
+
+Access 15: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 15.
+
+Access 16: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 16.
+
+Access 17: Mode r -- Address 0x00001020
+
+	Hex: 0x00001020
+	Decimal: 4128
+	Binary: 00000000000000000001000000100000
+	Formatted: 00000000000000000 0010000001 00000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000001 (129)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 129.
+	Cache miss - eviction on Way 0. Block timestamp updated to 17.
+
+Access 18: Mode r -- Address 0x00050400
+
+	Hex: 0x00050400
+	Decimal: 328704
+	Binary: 00000000000001010000010000000000
+	Formatted: 00000000000001010 0000100000 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 0000100000 (32)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 32.
+	Cache miss - eviction on Way 0. Block timestamp updated to 18.
+
+Access 19: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 19.
+
+Access 20: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 20.
+
+Access 21: Mode r -- Address 0x00001028
+
+	Hex: 0x00001028
+	Decimal: 4136
+	Binary: 00000000000000000001000000101000
+	Formatted: 00000000000000000 0010000001 01000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000001 (129)
+	Offset: 01000 (8)
+
+	Attempting to read data from cache slot 129.
+	Cache hit on Way 0. Block timestamp updated to 21.
+
+Access 22: Mode r -- Address 0x00051140
+
+	Hex: 0x00051140
+	Decimal: 332096
+	Binary: 00000000000001010001000101000000
+	Formatted: 00000000000001010 0010001010 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 0010001010 (138)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 138.
+	Cache miss - eviction on Way 0. Block timestamp updated to 22.
+
+Access 23: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 23.
+
+Access 24: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 24.
+
+Access 25: Mode r -- Address 0x00001030
+
+	Hex: 0x00001030
+	Decimal: 4144
+	Binary: 00000000000000000001000000110000
+	Formatted: 00000000000000000 0010000001 10000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000001 (129)
+	Offset: 10000 (16)
+
+	Attempting to read data from cache slot 129.
+	Cache hit on Way 0. Block timestamp updated to 25.
+
+Access 26: Mode r -- Address 0x00051780
+
+	Hex: 0x00051780
+	Decimal: 333696
+	Binary: 00000000000001010001011110000000
+	Formatted: 00000000000001010 0010111100 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 0010111100 (188)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 188.
+	Cache miss - eviction on Way 0. Block timestamp updated to 26.
+
+Access 27: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 27.
+
+Access 28: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 28.
+
+Access 29: Mode r -- Address 0x00001038
+
+	Hex: 0x00001038
+	Decimal: 4152
+	Binary: 00000000000000000001000000111000
+	Formatted: 00000000000000000 0010000001 11000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000001 (129)
+	Offset: 11000 (24)
+
+	Attempting to read data from cache slot 129.
+	Cache hit on Way 0. Block timestamp updated to 29.
+
+Access 30: Mode r -- Address 0x00051880
+
+	Hex: 0x00051880
+	Decimal: 333952
+	Binary: 00000000000001010001100010000000
+	Formatted: 00000000000001010 0011000100 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 0011000100 (196)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 196.
+	Cache miss - eviction on Way 0. Block timestamp updated to 30.
+
+Access 31: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 31.
+
+Access 32: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 32.
+
+Access 33: Mode r -- Address 0x00001040
+
+	Hex: 0x00001040
+	Decimal: 4160
+	Binary: 00000000000000000001000001000000
+	Formatted: 00000000000000000 0010000010 00000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000010 (130)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 130.
+	Cache miss - eviction on Way 0. Block timestamp updated to 33.
+
+Access 34: Mode r -- Address 0x00052400
+
+	Hex: 0x00052400
+	Decimal: 336896
+	Binary: 00000000000001010010010000000000
+	Formatted: 00000000000001010 0100100000 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 0100100000 (288)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 288.
+	Cache miss - eviction on Way 0. Block timestamp updated to 34.
+
+Access 35: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 35.
+
+Access 36: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 36.
+
+Access 37: Mode r -- Address 0x00001048
+
+	Hex: 0x00001048
+	Decimal: 4168
+	Binary: 00000000000000000001000001001000
+	Formatted: 00000000000000000 0010000010 01000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000010 (130)
+	Offset: 01000 (8)
+
+	Attempting to read data from cache slot 130.
+	Cache hit on Way 0. Block timestamp updated to 37.
+
+Access 38: Mode r -- Address 0x00052640
+
+	Hex: 0x00052640
+	Decimal: 337472
+	Binary: 00000000000001010010011001000000
+	Formatted: 00000000000001010 0100110010 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 0100110010 (306)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 306.
+	Cache miss - eviction on Way 0. Block timestamp updated to 38.
+
+Access 39: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 39.
+
+Access 40: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 40.
+
+Access 41: Mode r -- Address 0x00001050
+
+	Hex: 0x00001050
+	Decimal: 4176
+	Binary: 00000000000000000001000001010000
+	Formatted: 00000000000000000 0010000010 10000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000010 (130)
+	Offset: 10000 (16)
+
+	Attempting to read data from cache slot 130.
+	Cache hit on Way 0. Block timestamp updated to 41.
+
+Access 42: Mode r -- Address 0x00053080
+
+	Hex: 0x00053080
+	Decimal: 340096
+	Binary: 00000000000001010011000010000000
+	Formatted: 00000000000001010 0110000100 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 0110000100 (388)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 388.
+	Cache miss - eviction on Way 0. Block timestamp updated to 42.
+
+Access 43: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 43.
+
+Access 44: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 44.
+
+Access 45: Mode r -- Address 0x00001058
+
+	Hex: 0x00001058
+	Decimal: 4184
+	Binary: 00000000000000000001000001011000
+	Formatted: 00000000000000000 0010000010 11000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000010 (130)
+	Offset: 11000 (24)
+
+	Attempting to read data from cache slot 130.
+	Cache hit on Way 0. Block timestamp updated to 45.
+
+Access 46: Mode r -- Address 0x00053680
+
+	Hex: 0x00053680
+	Decimal: 341632
+	Binary: 00000000000001010011011010000000
+	Formatted: 00000000000001010 0110110100 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 0110110100 (436)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 436.
+	Cache miss - eviction on Way 0. Block timestamp updated to 46.
+
+Access 47: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 47.
+
+Access 48: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 48.
+
+Access 49: Mode r -- Address 0x00001060
+
+	Hex: 0x00001060
+	Decimal: 4192
+	Binary: 00000000000000000001000001100000
+	Formatted: 00000000000000000 0010000011 00000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000011 (131)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 131.
+	Cache miss - eviction on Way 0. Block timestamp updated to 49.
+
+Access 50: Mode r -- Address 0x00053800
+
+	Hex: 0x00053800
+	Decimal: 342016
+	Binary: 00000000000001010011100000000000
+	Formatted: 00000000000001010 0111000000 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 0111000000 (448)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 448.
+	Cache miss - eviction on Way 0. Block timestamp updated to 50.
+
+Access 51: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 51.
+
+Access 52: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 52.
+
+Access 53: Mode r -- Address 0x00001068
+
+	Hex: 0x00001068
+	Decimal: 4200
+	Binary: 00000000000000000001000001101000
+	Formatted: 00000000000000000 0010000011 01000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000011 (131)
+	Offset: 01000 (8)
+
+	Attempting to read data from cache slot 131.
+	Cache hit on Way 0. Block timestamp updated to 53.
+
+Access 54: Mode r -- Address 0x00054340
+
+	Hex: 0x00054340
+	Decimal: 344896
+	Binary: 00000000000001010100001101000000
+	Formatted: 00000000000001010 1000011010 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 1000011010 (538)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 538.
+	Cache miss - eviction on Way 0. Block timestamp updated to 54.
+
+Access 55: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 55.
+
+Access 56: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 56.
+
+Access 57: Mode r -- Address 0x00001070
+
+	Hex: 0x00001070
+	Decimal: 4208
+	Binary: 00000000000000000001000001110000
+	Formatted: 00000000000000000 0010000011 10000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000011 (131)
+	Offset: 10000 (16)
+
+	Attempting to read data from cache slot 131.
+	Cache hit on Way 0. Block timestamp updated to 57.
+
+Access 58: Mode r -- Address 0x00054980
+
+	Hex: 0x00054980
+	Decimal: 346496
+	Binary: 00000000000001010100100110000000
+	Formatted: 00000000000001010 1001001100 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 1001001100 (588)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 588.
+	Cache miss - eviction on Way 0. Block timestamp updated to 58.
+
+Access 59: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 59.
+
+Access 60: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 60.
+
+Access 61: Mode r -- Address 0x00001078
+
+	Hex: 0x00001078
+	Decimal: 4216
+	Binary: 00000000000000000001000001111000
+	Formatted: 00000000000000000 0010000011 11000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000011 (131)
+	Offset: 11000 (24)
+
+	Attempting to read data from cache slot 131.
+	Cache hit on Way 0. Block timestamp updated to 61.
+
+Access 62: Mode r -- Address 0x00054580
+
+	Hex: 0x00054580
+	Decimal: 345472
+	Binary: 00000000000001010100010110000000
+	Formatted: 00000000000001010 1000101100 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 1000101100 (556)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 556.
+	Cache miss - eviction on Way 0. Block timestamp updated to 62.
+
+Access 63: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 63.
+
+Access 64: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 64.
+
+Access 65: Mode r -- Address 0x00001080
+
+	Hex: 0x00001080
+	Decimal: 4224
+	Binary: 00000000000000000001000010000000
+	Formatted: 00000000000000000 0010000100 00000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000100 (132)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 132.
+	Cache miss - eviction on Way 0. Block timestamp updated to 65.
+
+Access 66: Mode r -- Address 0x00055600
+
+	Hex: 0x00055600
+	Decimal: 349696
+	Binary: 00000000000001010101011000000000
+	Formatted: 00000000000001010 1010110000 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 1010110000 (688)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 688.
+	Cache miss - eviction on Way 0. Block timestamp updated to 66.
+
+Access 67: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 67.
+
+Access 68: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 68.
+
+Access 69: Mode r -- Address 0x00001088
+
+	Hex: 0x00001088
+	Decimal: 4232
+	Binary: 00000000000000000001000010001000
+	Formatted: 00000000000000000 0010000100 01000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000100 (132)
+	Offset: 01000 (8)
+
+	Attempting to read data from cache slot 132.
+	Cache hit on Way 0. Block timestamp updated to 69.
+
+Access 70: Mode r -- Address 0x00055840
+
+	Hex: 0x00055840
+	Decimal: 350272
+	Binary: 00000000000001010101100001000000
+	Formatted: 00000000000001010 1011000010 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 1011000010 (706)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 706.
+	Cache miss - eviction on Way 1. Block timestamp updated to 70.
+
+Access 71: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 71.
+
+Access 72: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 72.
+
+Access 73: Mode r -- Address 0x00001090
+
+	Hex: 0x00001090
+	Decimal: 4240
+	Binary: 00000000000000000001000010010000
+	Formatted: 00000000000000000 0010000100 10000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000100 (132)
+	Offset: 10000 (16)
+
+	Attempting to read data from cache slot 132.
+	Cache hit on Way 0. Block timestamp updated to 73.
+
+Access 74: Mode r -- Address 0x00056280
+
+	Hex: 0x00056280
+	Decimal: 352896
+	Binary: 00000000000001010110001010000000
+	Formatted: 00000000000001010 1100010100 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 1100010100 (788)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 788.
+	Cache miss - eviction on Way 0. Block timestamp updated to 74.
+
+Access 75: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 75.
+
+Access 76: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 76.
+
+Access 77: Mode r -- Address 0x00001098
+
+	Hex: 0x00001098
+	Decimal: 4248
+	Binary: 00000000000000000001000010011000
+	Formatted: 00000000000000000 0010000100 11000
+
+	Tag: 00000000000000000 (0)
+	Index: 0010000100 (132)
+	Offset: 11000 (24)
+
+	Attempting to read data from cache slot 132.
+	Cache hit on Way 0. Block timestamp updated to 77.
+
+Access 78: Mode r -- Address 0x00056880
+
+	Hex: 0x00056880
+	Decimal: 354432
+	Binary: 00000000000001010110100010000000
+	Formatted: 00000000000001010 1101000100 00000
+
+	Tag: 00000000000001010 (10)
+	Index: 1101000100 (836)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 836.
+	Cache miss - eviction on Way 0. Block timestamp updated to 78.
+
+Access 79: Mode r -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to read data from cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 79.
+
+Access 80: Mode w -- Address 0x00099400
+
+	Hex: 0x00099400
+	Decimal: 627712
+	Binary: 00000000000010011001010000000000
+	Formatted: 00000000000010011 0010100000 00000
+
+	Tag: 00000000000010011 (19)
+	Index: 0010100000 (160)
+	Offset: 00000 (0)
+
+	Attempting to write data to cache slot 160.
+	Cache hit on Way 0. Block timestamp updated to 80.
+
+Cache parameters:
+
+	Cache size: 131072
+	Cache block size: 32
+	Cache number of lines: 1024
+	Cache associativity: 4
+
+Cache performance:
+
+	Attempted reads: 60
+	Cache read hits: 34
+	Cache read misses: 26
+
+	Attempted writes: 20
+	Cache write hits: 20
+	Cache write misses: 0
+
+	Cache hits: 54
+	Cache misses: 26
+	Total accesses: 80
+
+	Cache hit ratio: 67.50%
+	Cache miss ratio: 32.50%
+
+	Stream-in operations: 26
+	Cache evictions: 0
+	Stream-out operations: 0
+
+	Cycles with cache: 1380
+	Cycles without cache: 4000
+
